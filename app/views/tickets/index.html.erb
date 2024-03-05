@@ -1,0 +1,78 @@
+<p style="color: green"><%= notice %></p>
+
+<h1>Tickets</h1>
+
+<%= form_tag tickets_path, :method => 'get' do %>
+  <%= label_tag :category, 'Category' %>
+  <%= select_tag :category, options_for_select(['', 'Concerts', 'Sports', 'Arts & Theatre', 'Miscellaneous/Family – Private'], params[:category]) %>
+
+  <%= label_tag :price_min, 'Minimum Price' %>
+  <%= number_field_tag :price_min, params[:price_min], step: 1.00, min: 0, class: 'form-control'%>
+
+  <%= label_tag :price_max, 'Maximum Price' %>
+  <%= number_field_tag :price_max, params[:price_max], step: 1.00, min: 0,  class: 'form-control' %>
+
+  <%= label_tag :event_name, 'Event Name' %>
+  <%= text_field_tag :event_name, params[:event_name], class: 'form-control' %>
+
+  <%= submit_tag 'Search', class: 'btn btn-primary' %>
+
+<% end %>
+<br>
+
+
+<table border="2">
+  <thead>
+  <tr>
+    <th>SNo.</th>
+    <% if current_user.admin %>
+      <th>User ID</th>
+    <% end %>
+    <th>By</th>
+    <th>For</th>
+    <th>Event Name</th>
+    <th>Room Name</th>
+    <th>Category</th>
+    <th>Date</th>
+    <th>Start Time</th>
+    <th>End Time</th>
+    <th>Quantity</th>
+    <th>Ticket Price</th>
+    <th>Total Price</th>
+    <th>Confirmation Number</th>
+    <th colspan="3"></th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <% @tickets.each do |ticket| %>
+    <tr>
+      <td><%= ticket.id %></td>
+      <% if current_user.admin %>
+        <td><%= ticket.user.id %></td>
+      <% end %>
+      <td><%= ticket.user.name %></td>
+      <td><%= ticket.whom.name == ticket.user.name ? "Self" : ticket.whom.name %></td>
+      <td><%= ticket.event.name %></td>
+      <td><%= ticket.event.room.location %></td>
+      <td><%= ticket.event.category %></td>
+      <td><%= ticket.event.date %></td>
+      <td><%= ticket.event.start_time.strftime('%H:%M:%S') %></td>
+      <td><%= ticket.event.end_time.strftime('%H:%M:%S') %></td>
+      <td><%= ticket.quantity %></td>
+      <td><%= ticket.event.ticket_price %></td>
+      <td><%= ticket.quantity * (ticket.event.ticket_price if ticket.event) %></td>
+      <td><%= ticket.confirmation_number %></td>
+      <td><%= link_to 'Show', ticket %></td>
+      <td><%= button_to 'Delete', ticket, method: :delete, data: { turbo_confirm: 'Are you sure?' } %></td>
+      <% if current_user.id == ticket.whom_id %>
+        <td><%= link_to 'Add Review', new_review_path(:event_id => ticket.event_id) %></td>
+      <% end %>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+
+<br>
+<td><%= link_to 'New Ticket', events_path %></td>
+<br><br>

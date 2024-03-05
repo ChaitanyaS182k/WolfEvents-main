@@ -1,0 +1,29 @@
+<p id="notice"><%= notice %></p>
+
+<h1>WolfEvents: The Event Management System</h1>
+
+<% if current_user %>
+  <% if current_user.admin %>
+    <%= link_to "Create New Events", new_event_path %><br><br>
+    <%= link_to "Create New Attendees", new_user_path %><br><br>
+    <%= link_to "Create New Room", new_room_path %><br><br>
+    <%= link_to "View All Attendees", users_path %><br><br>
+  <% end %>
+  <%= link_to 'View Available Events', events_path %><br><br>
+  <%= link_to 'View Booking History', tickets_path %><br><br>
+  <%= link_to 'View Account Details', current_user %><br><br>
+
+  <% if current_user.admin %>
+    <%= link_to "View All Rooms", rooms_path %><br><br>
+    <%= link_to "View All Reviews", reviews_path %><br><br>
+    <%= link_to "Get All Attendees by Event Name", extra_path %><br><br>
+  <% else %>
+    <%= link_to 'View Your Reviews', reviews_path(user_id: current_user.id) %><br><br>
+    <%= link_to 'View All Reviews', reviews_path(view_all_reviews: true) %><br><br>
+  <% end %>
+  <%= link_to "Log Out", logout_path %>
+<% else %>
+  <%= link_to "Sign Up", signup_path %> or
+  <%= link_to "Log In", login_path %>
+<% end %>
+

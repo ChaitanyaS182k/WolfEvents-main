@@ -1,0 +1,73 @@
+<p style="color: green"><%= notice %></p>
+
+<h1>Events</h1>
+<br>
+<h4>Search Events by Specific Category, Date, Price Range and Event Name</h4>
+<%= form_tag events_path, :method => 'get' do %>
+    <%= label_tag :category, 'Category' %>
+    <%= select_tag :category, options_for_select(['', 'Concerts', 'Sports', 'Arts & Theatre', 'Miscellaneous/Family – Private'], params[:category]) %>
+
+    <%= label_tag :price_min, 'Minimum Price' %>
+    <%= number_field_tag :price_min, params[:price_min], step: 1.00, min: 0,  class: 'form-control'%>
+
+    <%= label_tag :price_max, 'Maximum Price' %>
+    <%= number_field_tag :price_max, params[:price_max], step: 1.00, min: 0,  class: 'form-control' %>
+
+    <%= label_tag :event_name, 'Event Name' %>
+    <%= text_field_tag :event_name, params[:event_name], class: 'form-control' %>
+
+    <%= label_tag :date, 'Date' %>
+    <%= date_field_tag :date, params[:date], class: 'form-control' %>
+
+  <%= submit_tag 'Search', class: 'btn btn-primary' %>
+
+<% end %>
+<br>
+<table border="2">
+  <thead>
+  <tr>
+    <th >Event ID</th>
+    <th>Event Name</th>
+    <th>Event Category</th>
+    <th>Event Date</th>
+    <th>Start Time</th>
+    <th>End Time</th>
+    <th>Room Name</th>
+    <th>Ticket Price</th>
+    <th>Seats Left</th>
+    <th colspan="4"></th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <% @events.each do |event| %>
+    <tr>
+      <td><%= event.id %></td>
+      <td><%= event.name %></td>
+      <td><%= event.category %></td>
+      <td><%= event.date %></td>
+      <td><%= event.start_time.strftime('%H:%M:%S') %></td>
+      <td><%= event.end_time.strftime('%H:%M:%S')  %></td>
+      <td><%= event.room.location%></td>
+      <td><%= event.ticket_price %></td>
+      <td><%= event.seats_left %></td>
+      <% if current_user.admin %>
+        <td><%= link_to 'Show', event %></td>
+        <td><%= link_to 'Edit', edit_event_path(event) %></td>
+        <td><%= link_to 'Destroy', event, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      <% end %>
+      <% if verify_user_can_purchase(event) %>
+      <td><%= link_to_if event.seats_left > 0, 'Purchase Ticket', new_ticket_path(:event_id => event.id) %></td>
+        <% end %>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+
+<% if current_user.admin %>
+  <br>
+  <td><%= link_to 'New Event', new_event_path %></td><br>
+<% end %>
+
+
+

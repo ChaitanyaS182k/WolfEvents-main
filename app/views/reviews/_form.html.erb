@@ -1,0 +1,54 @@
+<% if @cannot_review %>
+  <span> CANNOT ADD THE REVIEW FOR THIS EVENT</span>
+  <% else %>
+<%= form_with(model: review) do |form| %>
+  <% if review.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(review.errors.count, "error") %> prohibited this review from being saved:</h2>
+
+      <ul>
+        <% review.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+
+
+  <div>
+   <label>Event: <%=@event.name %></label>
+    <input type="hidden" id="review_event_id" name="review[event_id]" value="<%= @event.id %>"/>
+    <input type="hidden" id="review_user_id" name="review[user_id]" value="<%= @reviewer %>"/>
+  </div>
+
+  <div>
+    <%= form.label :rating, style: "display: block" %>
+    <%= form.number_field :rating %>
+  </div>
+
+  <div>
+    <%= form.label :feedback, style: "display: block" %>
+    <%= form.text_area :feedback %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>
+
+<script>
+
+    $("form").on('submit',function(e){
+        e.preventDefault();
+        var rating=document.getElementById("review_rating").value;
+        var feedback =document.getElementById("review_feedback").value;
+        if(rating && feedback && rating >=0 && rating<=5){
+            this.submit()
+        }
+        else{
+            alert("Feedback cannot be empty and rating should be between 0 and 5");
+        }
+    })
+</script>
+<% end %>

@@ -1,0 +1,141 @@
+<%= form_with(model: event)  do |form| %>
+  <% if event.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(event.errors.count, "error") %> prohibited this event from being saved:</h2>
+
+      <ul>
+        <% event.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :name, style: "display: block" %>
+    <%= form.text_field :name %>
+  </div>
+
+
+  <div>
+    <%= form.label :category, style: "display: block" %>
+    <%= form.select :category, ['Concerts', 'Sports', 'Arts & Theatre', 'Miscellaneous/Family – Private']%>
+  </div>
+
+  <div>
+    <%= form.label :date, style: "display: block" %>
+    <%= form.date_field :date %>
+  </div>
+
+  <div>
+    <%= form.label :start_time, style: "display: block" %>
+    <%= form.time_field :start_time %>
+  </div>
+
+  <div>
+    <%= form.label :end_time, style: "display: block" %>
+    <%= form.time_field :end_time %>
+  </div>
+
+  <div>
+    <%= form.label :ticket_price, style: "display: block" %>
+    <%= form.number_field :ticket_price %>
+  </div>
+
+  <div>
+    <%= form.label :seats_left, style: "display: block" %>
+    <%= form.number_field :seats_left %>
+  </div>
+  <div>
+    <%= form.label :room_id, style: "display: block" %>
+    <select id="event_room_id" name="event[room_id]">
+      <% if @room %>
+      <option value="<%= @room.id %>"><%= @room.location %></option>
+        <% end %>
+    </select>
+    <% if @room %>
+      <span>Current Location:<%= @room.location %> for <%= @event.date %> from <%= @event.start_time.strftime('%H:%M:%S') %> to <%= @event.end_time.strftime('%H:%M:%S') %> </span>
+    <% end %>
+  </div>
+
+ <button style="margin-top: 10px;margin-bottom: 20px" id="room" type="button">Search Rooms</button>
+  <br/>
+  <div>
+    <%= form.submit %>
+  </div>
+
+  <script>
+    $("form").on('submit',function(e){
+        e.preventDefault();
+        var start=document.getElementById("event_start_time").value;
+        var end =document.getElementById("event_end_time").value;
+        var seats=document.getElementById("event_seats_left").value;
+        var date =document.getElementById("event_date").value;
+        var name=document.getElementById("event_name").value;
+        var category =document.getElementById("event_category").value;
+        var price=document.getElementById("event_ticket_price").value;
+
+
+        if(start && end && seats && date &&name && category && price > 0 && seats >0 ){
+        isValid=true;
+        start=timeToDate(start);
+        end=timeToDate(end);
+        if (start>end){
+            isValid=false;
+            alert("start time cannot be greater than end time");
+        }
+
+        var date=document.getElementById("event_date").value;
+
+        date=new Date(date);
+        var now=new Date().toISOString().split('T')[0];
+        now=new Date(now);
+        if (date.getTime()<now.getTime()){
+            isValid=false;
+            alert("invalid date selected");
+        }
+
+
+        if(isValid)
+            this.submit();
+        }
+        else{
+            alert('Form input is invalid');
+        }
+        //this.submit();
+    })
+
+    $("#room").on('click',function(){
+         var start=document.getElementById("event_start_time").value;
+         var end =document.getElementById("event_end_time").value;
+         var date=document.getElementById("event_date").value;
+         var seats=document.getElementById("event_seats_left").value;
+         if(start && end && date && seats && seats>0){
+         $.ajax({
+             url: "/roomsearch",
+             type: "GET",
+             data: {date:date,start:start,end:end, seats:seats},
+             success: function(data) {
+
+                 document.getElementById("event_room_id").innerHTML = "";
+
+                 var listitems = [];
+                 $.each(data,function(k,value) {
+                     listitems += '<option name="'+data+'" value="' + value.id+ '">' + value.location + '</option>';    });
+                 $("#event_room_id").append(listitems);
+
+             }
+         })
+     }
+     else{
+         alert("To search Room date,start time and end time should be greater than 0");
+         }})
+    function timeToDate(input){
+        const [hours, minutes, seconds] = input.split(':');
+        const dateObject = new Date();
+        dateObject.setHours(Number(hours));
+        dateObject.setMinutes(Number(minutes));
+        return dateObject;
+    }
+  </script>
+<% end %>

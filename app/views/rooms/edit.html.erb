@@ -1,0 +1,12 @@
+<% if current_user.admin %>
+<h1>Editing room</h1>
+
+<%= render "form", room: @room %>
+
+<br>
+
+<div>
+  <%= link_to "Show this room", @room %> |
+  <%= link_to "Back to rooms", rooms_path %>
+</div>
+<% end %>

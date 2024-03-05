@@ -1,0 +1,69 @@
+<%= form_with(model: user) do |form| %>
+  <% if user.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(user.errors.count, "error") %> prohibited this user from being saved:</h2>
+
+      <ul>
+        <% user.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :name, style: "display: block" %>
+    <%= form.text_field :name %>
+  </div>
+
+
+
+  <div>
+    <%= form.label :email, style: "display: block" %>
+    <% if user.new_record?%>
+      <%= form.text_field :email %>
+    <% elsif !user.admin %>
+      <%= form.text_field :email %>
+    <% else %>
+      <%= form.text_field :email, readonly: true %>
+    <% end %>
+  </div>
+
+  <div>
+    <%= form.label :address, style: "display: block" %>
+    <%= form.text_area :address, :rows=> 4 %>
+  </div>
+
+  <div>
+    <%= form.label :phone_number, style: "display: block" %>
+    <%= form.text_field :phone_number %>
+  </div>
+
+  <div>
+    <%= form.label :"Credit Card", style: "display: block" %>
+    <%= form.text_field :credit_card_info, placeholder: "1234-1234-1234-1234" %>
+  </div>
+
+  <div>
+    <%= form.label :password, style: "display: block" %>
+    <% if user.new_record?%>
+      <%= form.password_field :password %> (Must contain a digit, lower case character, upper case character, and symbol)
+    <% elsif !user.admin %>
+      <%= form.password_field :password %> (Must contain a digit, lower case character, upper case character, and symbol)
+    <% else %>
+      <%= form.password_field :password, placeholder: "****", disabled: true %> (Must contain a digit, lower case character, upper case character, and symbol)
+    <% end %>
+  </div>
+
+  <div>
+    <% if user.new_record? %>
+      <%= form.label :password_confirmation, style: "display: block" %>
+      <%= form.password_field :password_confirmation %>
+    <% end %>
+  </div>
+  <br>
+  <div>
+    <%= form.submit :"Submit" %>
+  </div>
+  <br>
+<% end %>

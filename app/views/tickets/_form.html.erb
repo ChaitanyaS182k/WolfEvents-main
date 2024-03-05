@@ -1,0 +1,47 @@
+<%= form_with(model: ticket) do |form| %>
+  <% if ticket.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(ticket.errors.count, "error") %> prohibited this ticket from being saved:</h2>
+
+      <ul>
+        <% ticket.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.collection_select :user_id, User.where.not(id: 0), :id, :name, {include_blank: "Select Attendee"} %>
+  </div>
+
+  <div class="field">
+    <%= form.hidden_field :event_id, value: @event.id %>
+  </div>
+
+  <p>Confirm Ticket Booking: <%= @event.name %></p>
+  <div>
+    <%= form.label :quantity, 'Number of Tickets' %>
+    <%= form.number_field :quantity, value: 1, step: 1, class: 'form-control', id: 'quantity_field' %>
+    <p id="total_cost">Total Cost: <%= number_to_currency(@event.ticket_price) %></p>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('quantity_field').addEventListener('input', function() {
+            var quantity = parseInt(this.value);
+            if (quantity < 1) {
+                this.value = 1;
+                quantity = 1;
+            }
+            var ticketPrice = <%= @event.ticket_price %>;
+            var totalCost = quantity * ticketPrice;
+            document.getElementById('total_cost').innerHTML = 'Total Cost: ' + totalCost.toFixed(2);
+        });
+    });
+</script>

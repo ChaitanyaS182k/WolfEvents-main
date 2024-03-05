@@ -1,0 +1,26 @@
+<h1> Extra Credit Get Attendees by Event Name</h1>
+<%= form_tag extra_path, :method => 'get' do %>
+  <%= label_tag :event_name, 'Event Name' %>
+  <%= select_tag :event_name, options_for_select(@events, params[:event_name]) %>
+
+  <%= submit_tag 'Search', class: 'btn btn-primary' %>
+<% end %>
+<br>
+<table border="2">
+  <thead>
+  <tr>
+    <th >Attendee ID</th>
+    <th>Attendee Name</th>
+    <th>Attendee Email</th>
+  </tr>
+  </thead>
+  <tbody>
+  <% @attendees.each do |a| %>
+    <tr>
+      <td><%= a.id %></td>
+      <td><%= a.name %></td>
+      <td><%= a.email %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>

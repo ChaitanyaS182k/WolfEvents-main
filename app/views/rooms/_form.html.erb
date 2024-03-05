@@ -1,0 +1,38 @@
+<%= form_with(model: room) do |form| %>
+  <% if room.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(room.errors.count, "error") %> prohibited this room from being saved:</h2>
+
+      <ul>
+        <% room.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :location, style: "display: block" %>
+    <%= form.text_field :location %>
+  </div>
+
+  <div>
+    <%= form.label :capacity, style: "display: block" %>
+    <%= form.number_field :capacity, value: 1, step: 1, class: 'form-control', id: 'quantity_field' %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('quantity_field').addEventListener('input', function() {
+            var quantity = parseInt(this.value);
+            if (quantity < 1) {
+                this.value = 1;
+            }
+        });
+    });
+</script>
